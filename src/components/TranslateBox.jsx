@@ -7,7 +7,6 @@ import { AiFillCopy } from "react-icons/ai";
 import { MdClear } from "react-icons/md";
 import { Animation } from "./Animation";
 
-
 export const TranslateBox = () => {
 
     const [q, setQ] = useState("");
@@ -25,15 +24,33 @@ export const TranslateBox = () => {
             setOutput("");
             return false;
         };
+
         if (source === "" || target === "") {
             return error("Please select language");
         }
+
         try {
-            let res = await axios.post("", { q, source, target, format: "text" });
+            let res = await axios.post(
+                "https://libretranslate.de/translate",
+                {
+                    q: q,
+                    source: source,
+                    target: target,
+                    format: "text"
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
             res = res.data.translatedText;
             setOutput(res);
+
         } catch (err) {
             console.log(err);
+            error("Translation failed");
         }
     }
 
@@ -51,8 +68,8 @@ export const TranslateBox = () => {
             setOutput("");
         }
     }
- 
-//Debounce Function
+
+    // Debounce Function
     useEffect(() => {
 
         let timerID = setTimeout(() => {
@@ -65,14 +82,17 @@ export const TranslateBox = () => {
 
     }, [q]);
 
-
     return (
         <>
             <div className="mainBox">
                 <div>
                     <SelectBox id={'source'} select={handleSelectChange} />
                     <div className="box">
-                        <textarea onChange={(e) => { setQ(e.target.value) }} value={q} className="outputResult"></textarea>
+                        <textarea
+                            onChange={(e) => { setQ(e.target.value) }}
+                            value={q}
+                            className="outputResult">
+                        </textarea>
                     </div>
                     <div className="iconBox">
                         <p>{q.length}/250</p>
@@ -101,4 +121,3 @@ export const TranslateBox = () => {
         </>
     );
 };
-
